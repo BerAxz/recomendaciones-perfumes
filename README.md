@@ -1,22 +1,12 @@
-# Recomendador de perfumes por reglas de asociación
+# Recomendador de perfumes
 
-Análisis exploratorio y demostración académica para estudiar relaciones entre notas aromáticas de perfumes. Cada perfume consolidado es una transacción; las notas de su ficha son los ítems. No se usan usuarios, compras ni historiales comerciales.
+El [notebook](notebooks/analisis_viabilidad_recomendador_perfumes.ipynb) usa `data/fragrances_clean.csv` para recomendar perfumes por notas aromáticas similares y filtrar candidatos según la columna `Gender`. El CSV contiene **24.063 perfumes y 18 columnas**.
 
-## Estructura
+La puntuación combina similitud de notas mediante TF-IDF y coseno (75 %), acordes principales (20 %) y perfumistas compartidos (5 %). Cada recomendación exige al menos una nota compartida y muestra las señales que explican su posición. La valoración de usuarios no forma parte de la similitud aromática.
 
-```text
-.
-├── data/
-│   └── parfumo_data_clean.csv
-├── notebooks/
-│   └── analisis_viabilidad_recomendador_perfumes.ipynb
-├── requirements.txt
-└── README.md
-```
+El filtro `hombre` incluye perfumes `men` y `unisex`; `mujer` incluye `women` y `unisex`; `unisex` se limita a esa categoría; `todos` admite las tres. Estas etiquetas provienen directamente del CSV.
 
-El notebook detecta automáticamente las columnas reales del CSV, analiza la cobertura de notas, prepara las transacciones, compara configuraciones de Apriori y presenta recomendaciones construidas con reglas reales del catálogo.
-
-## Ejecutar
+## Uso
 
 Requiere Python 3.10 o posterior.
 
@@ -27,14 +17,4 @@ pip install -r requirements.txt
 jupyter notebook notebooks/analisis_viabilidad_recomendador_perfumes.ipynb
 ```
 
-En Windows, activa el entorno con `.venv\\Scripts\\activate`. El notebook busca el archivo en `data/parfumo_data_clean.csv`; si lo mueves, cambia `RUTA_CSV` en la sección de carga.
-
-## Decisiones del análisis
-
-- La fuente es el CSV de Parfumo incorporado en `data/`.
-- Cada fragancia se identifica por marca y nombre. URLs repetidas se eliminan primero y las variantes/publicaciones restantes se consolidan por marca y nombre base (retirando sufijos de concentración observados en el título) y se conserva la ficha con más notas; no se mezclan sus listas.
-- Los productos sin notas se incluyen al medir cobertura, pero no se consideran transacciones vacías para Apriori porque los campos faltantes representan información desconocida.
-- Los acordes generales se excluyen del conjunto de ítems para mantener el análisis en notas aromáticas.
-- Las reglas representan coocurrencias estadísticas de las fichas y no necesariamente similitud olfativa percibida.
-
-El CSV Parfumo fue incorporado localmente a este repositorio. El notebook analiza ese archivo tal cual y no descarga datos durante la ejecución.
+En el notebook, `recomendar_perfumes(id_perfume, genero="hombre", limite=5)` acepta el ID mostrado en el catálogo o un nombre exacto y único.
